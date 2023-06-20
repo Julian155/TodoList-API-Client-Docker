@@ -1,0 +1,42 @@
+version: '1.0'
+
+services:
+  nginx:
+    build:
+      context: ../
+      dockerfile: ./docker/nginx/Dockerfile
+    ports:
+      - 8080:80
+    volumes:
+      - ../Todo-List-Client/:/var/www/php
+    networks:
+      - nginx
+    depends_on:
+      - php
+
+  api:
+    build:
+      context: ../
+      dockerfile: ./docker/python/Dockerfile
+    volumes:
+      - ../python-todo-listen-projekt/:/usr/src/app/
+    ports:
+      - 5001:5001
+    networks:
+      - nginx
+
+  php:
+    build:
+      context: ../
+      dockerfile: ../docker/php/Dockerfile
+    restart: unless-stopped
+    environment:
+      APP_ENV: dev
+    volumes:
+      - ../Todo-List-Client/:/var/www/php
+    networks:
+      - nginx
+
+networks:
+  nginx:
+
